@@ -6,7 +6,7 @@ public class Main {
 
     public static void main(String[] args) {
 
-        String json = """
+        /*String json = """
                 { 
                     "nome": "João",
                     "idade": 25,
@@ -16,23 +16,53 @@ public class Main {
                         "cidade": "Rio de Janeiro",
                         "cep": "12345-678"
                     }
-                }
+                
                        
                     
                 """;
 
-        Lexer lexer = new Lexer(json);
-        List<Token> tokens = lexer.tokenize();
+        try {
 
-        for (Token token : tokens) {
-            System.out.println(token);
+            Lexer lexer = new Lexer(json);
+            List<Token> tokens = lexer.tokenize();
+
+            Parser parser = new Parser(tokens);
+            JsonValue result = parser.parse();
+
+            System.out.println(result);
+        } catch (RuntimeException e) {
+            System.out.println("Erro ao fazer parse: " + e.getMessage());
         }
 
-        Parser parser = new Parser(tokens);
-        JsonValue result = parser.parse();
+    } */
 
-        System.out.println(result);
+        // Teste 1 - falta fecha chaves
+        testar("{\"nome\": \"João\"");
 
+        // Teste 2 - falta o valor
+        testar("{\"nome\": }");
 
+        // Teste 3 - falta os dois pontos
+        testar("{\"nome\" \"João\"}");
+    }
+
+    static void testar(String json) {
+        System.out.println("Input: " + json);
+        try {
+            Lexer lexer = new Lexer(json);
+            List<Token> tokens = lexer.tokenize();
+
+            Parser parser = new Parser(tokens);
+            JsonValue result = parser.parse();
+
+            System.out.println("Resultado: " + result);
+        } catch (RuntimeException e) {
+            System.out.println("Erro: " + e.getMessage());
+        }
+        System.out.println("---");
     }
 }
+
+
+
+

@@ -24,10 +24,29 @@ public class Parser {
         Token token = current();
         if (token.type != expected) {
             throw new RuntimeException(
-                    "Esperado " + expected + " mas encontrou " + token.type + " ('" + token.value +"')");
+                    "Erro na posição " + pos + ": esperado " + descricao(expected) +
+                            " mas encontrou " + descricao(token.type) +
+                            (token.value.isEmpty() ? "" : " ('" + token.value + "')")
+            );
         }
         pos++;
         return token;
+    }
+
+    private String descricao(TokenType type) {
+        return switch (type) {
+            case LBRACE -> "'{'";
+            case RBRACE -> "'}'";
+            case LBRACKET -> "'['";
+            case RBRACKET -> "']'";
+            case COLON -> "':'";
+            case COMMA -> "','";
+            case STRING -> "uma string";
+            case NUMBER -> "um número";
+            case BOOLEAN -> "um booleano";
+            case NULL -> "null";
+            case EOF -> "fim do JSON";
+        };
 
     }
     public JsonValue parse() {
@@ -47,7 +66,8 @@ public class Parser {
             case NULL -> { pos++; yield new JsonNull(); }
             case LBRACE -> parseObject();
             case LBRACKET -> parseArray();
-            default -> throw new RuntimeException("Token inesperado: " + token.type);
+            case EOF -> throw new RuntimeException("Erro na posição " + pos + ": JSON incompleto, valor esperado mas chegou ao fim");
+            default -> throw new RuntimeException("Erro na posição " + pos + ": '" + token.value + "' não é um valor JSON válido");
         };
 
     }
